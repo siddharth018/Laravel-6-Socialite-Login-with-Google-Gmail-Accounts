@@ -9,70 +9,319 @@
 
 ## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Hey, Reader Here, I will brief you step by step login with google account in laravel 6 socialite. in laravel 6 socialite provides API to login with Gmail account. I will help you step by step instruction. let’s follow the tutorial and implement it.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Step 1: Install Laravel 6
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+I am going to install laravel 6 projects.
 
-## Learning Laravel
+laravel new google_login
+now I am going inside of the folder
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+cd google_login
+Step 2: Install Socialite
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+In the second step, I will install Socialite Package using composer that provides API to connect with google account. check below command
 
-## Laravel Sponsors
+composer require laravel/socialite
+Once package installs then we should add providers and aliases inside of config file, Now I am going to open onfig/app.php file and add service provider and alias.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+'providers' => [
+    ....
+    Laravel\Socialite\SocialiteServiceProvider::class,
+],
+'aliases' => [
+    ....
+    'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+],
+##  Step 3: Create Google App
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
+## the third step we need to google client id and the secret that way we can get information from another user. go to Google Developers Console. you can check bellow screen :
 
-## Contributing
+##  Now you have to click on Credentials and choose first option oAuth and click Create new Client ID button. now you can see the following slide:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+##  after creating an account you can copy client id and secret.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+##  Now you have to set app id, secret and call back URL in config file so open config/services.php and set id and secret this way:
 
-## License
+##  config/services.php
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+return [
+    ....
+    'google' => [
+        'client_id' => 'app id',
+        'client_secret' => 'add secret',
+        'redirect' => 'http://localhost:8000/auth/google/callback',
+    ],
+]
+##  Step 4: Create Auth
+
+##  In this step, we need to install laravel ui and generate auth in laravel 6 application so, let’s run following command:
+
+##  Install Laravel UI:
+
+composer require laravel/ui
+##  Create Auth:
+
+php artisan ui bootstrap --auth
+NPM Install:
+
+npm install
+Run NPM:
+
+npm run dev
+##  Step 5: Add Database Column
+
+##  I have to create a migration for add google_id in your user table. So let’s run bellow command:
+
+##  php artisan make:migration google_id_column
+
+##  add inside of Migration file
+
+<?php
+  
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+   
+class GoogleIdColumn extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('users', function ($table) {
+            $table->string('google_id')->nullable();
+        });
+    }
+   
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        //
+    }
+}
+##  Update mode like this way:
+
+##  app/User.php
+
+<?php
+  
+namespace App;
+  
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+   
+class User extends Authenticatable
+{
+    use Notifiable;
+  
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name', 'email', 'password', 'google_id'
+    ];
+  
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+   
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+}
+routes/web.php
+
+<?php
+
+Route::get('/', function () {
+    return view('welcome');
+});
+  
+Auth::routes();
+  
+Route::get('/home', 'HomeController@index')->name('home');
+Route::get('auth/google', 'Auth\GoogleController@redirectToGoogle');
+Route::get('auth/google/callback', 'Auth\GoogleController@handleGoogleCallback');
+##  Step 6: Create Controller
+
+##  Step 6: Create Controller
+
+## After add route, we need to add method of google auth that method will handle google callback URL and etc, first put bellow code on your GoogleController.php file.
+
+##  app/Http/Controllers/Auth/GoogleController.php
+
+<?php
+  
+namespace App\Http\Controllers\Auth;
+  
+use App\Http\Controllers\Controller;
+use Socialite;
+use Auth;
+use Exception;
+use App\User;
+  
+class GoogleController extends Controller
+{
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+      
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function handleGoogleCallback()
+    {
+        try {
+    
+            $user = Socialite::driver('google')->user();
+     
+            $finduser = User::where('google_id', $user->id)->first();
+     
+            if($finduser){
+     
+                Auth::login($finduser);
+    
+                return redirect('/home');
+     
+            }else{
+                $newUser = User::create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'google_id'=> $user->id,
+                    'password' => encrypt('Superman_test')
+                ]);
+    
+                Auth::login($newUser);
+     
+                return redirect('/home');
+            }
+    
+        } catch (Exception $e) {
+            dd($e->getMessage());
+        }
+    }
+}
+##  Step 7: Update Blade File
+
+##  Ok, now, at last, we need to add blade view so first create new file login.blade.php file and put bellow code:
+
+ ##  resources/views/auth/login.blade.php
+
+@extends('layouts.app')
+  
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Laravel 6 - Login with Google Account Example - Real Programmer</div>
+  
+                <div class="card-body">
+                    <form method="POST" action="{{ route('login') }}">
+                        @csrf
+  
+                        <div class="form-group row">
+                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+  
+                            <div class="col-md-6">
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+  
+                                @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+   
+                        <div class="form-group row">
+                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
+  
+                            <div class="col-md-6">
+                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+  
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+  
+                        <div class="form-group row">
+                            <div class="col-md-6 offset-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+  
+                                    <label class="form-check-label" for="remember">
+                                        {{ __('Remember Me') }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+  
+                        <div class="form-group row mb-0">
+                            <div class="col-md-8 offset-md-4">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ __('Login') }}
+                                </button>
+  
+                                @if (Route::has('password.request'))
+                                    <a class="btn btn-link" href="{{ route('password.request') }}">
+                                        {{ __('Forgot Your Password?') }}
+                                    </a>
+                                @endif
+                                  
+                                <a href="{{ url('auth/google') }}" style="margin-top: 20px;" class="btn btn-lg btn-success btn-block">
+                                  <strong>Login With Google</strong>
+                                </a> 
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+##  Ok, now you are ready to use open your browser and check here: URL + ‘/login’.
+
+## Run command
+
+## php artisan serve
+
+http://localhost:8000/login
